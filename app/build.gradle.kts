@@ -10,12 +10,16 @@ android {
     compileSdk = 34
 
     defaultConfig {
+        val hostname = "http://www.omdbapi.com/"
+        val apiKey = "362046fc"
+        manifestPlaceholders["hostName"] = hostname
         applicationId = "com.example.blockbuster"
         minSdk = 24
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
-
+        buildConfigField("String", "HOST_NAME", "\"$hostname\"")
+        buildConfigField("String", "API_KEY", "\"$apiKey\"")
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -27,6 +31,11 @@ android {
                 "proguard-rules.pro"
             )
         }
+
+        debug {
+            applicationIdSuffix = ".debug"
+            isDebuggable = true
+        }
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
@@ -34,6 +43,10 @@ android {
     }
     kotlinOptions {
         jvmTarget = "1.8"
+    }
+
+    buildFeatures {
+        buildConfig = true
     }
 }
 
@@ -43,32 +56,36 @@ dependencies {
     implementation("androidx.appcompat:appcompat:1.7.0")
     implementation("com.google.android.material:material:1.12.0")
 
-    //retrofit & okhttp
+    // Retrofit & Okhttp
     implementation ("com.squareup.retrofit2:retrofit:2.9.0")
     implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
     implementation ("com.squareup.okhttp3:logging-interceptor:5.0.0-alpha.2")
 
-
-    //coroutines
+    // Coroutines
     implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
     implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
 
-    //mvvm
+    // Architectural Components
     implementation ("androidx.lifecycle:lifecycle-livedata-ktx:2.8.2")
     implementation ("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.2")
 
-    //glide
+    // Room
+    implementation ("androidx.room:room-runtime:2.6.1")
+    implementation ("androidx.room:room-ktx:2.6.1")
+    kapt ("androidx.room:room-compiler:2.6.1")
+
+    //Glide
     implementation ("com.github.bumptech.glide:glide:4.16.0")
 
-//    //dagger
-//    implementation ("com.google.dagger:dagger:2.48")
-//    kapt ("com.google.dagger:dagger-compiler:2.48")
-
-    //hilt
+    //Hilt
     implementation ("com.google.dagger:hilt-android:2.48")
     kapt ("com.google.dagger:hilt-android-compiler:2.48")
 
     testImplementation("junit:junit:4.13.2")
-    androidTestImplementation("androidx.test.ext:junit:1.2.0")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.6.0")
+    androidTestImplementation("androidx.test.ext:junit:1.2.1")
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")
 }
+kapt {
+    correctErrorTypes = true
+}
+
