@@ -1,8 +1,8 @@
 package com.example.blockbuster.data.remote.repository
 
 import android.util.Log
-import androidx.lifecycle.LiveData
-import com.example.blockbuster.data.remote.model.MovieSearchResultResponse
+import com.example.blockbuster.data.remote.model.ApiMovieDetails
+import com.example.blockbuster.data.remote.model.ApiMovieSearchResult
 import com.example.blockbuster.data.remote.service.ApiService
 import com.example.blockbuster.data.remote.utils.ApiResult
 import com.example.blockbuster.data.remote.utils.ErrorResponse
@@ -14,16 +14,29 @@ import java.lang.Exception
 import javax.inject.Inject
 
 class MainRemoteRepository @Inject constructor(private val apiService: ApiService): RemoteRepository {
-    override fun searchMovie(query: String): Flow<ApiResult<MovieSearchResultResponse, ErrorResponse>> {
-        return flow {
-            val response = apiService.searchMovies(query, 1)
+
+    override fun searchMovie(query: String): Flow<ApiResult<ApiMovieSearchResult, ErrorResponse>> =
+        flow {
+            val response = apiService.searchMovies(query)
             if (response.isSuccessful) {
-                val value = response.body()
-                emit(ApiResult.success(value ?: throw Exception("")))
+                val data = response.body()
+                emit(ApiResult.success(data ?: throw Exception("An error has occurred"))) // TODO: show better exception
             } else {
                 Log.d("jerrydev", "searchMovie: $response")
                 emit(ApiResult.failure(ErrorResponse("", "")))
             }
         }.flowOn(Dispatchers.IO)
+
+    override fun getMovieDetails(imdbId: String): Flow<ApiResult<ApiMovieDetails, ErrorResponse>> {
+        return flow {
+            val response = apiService.getMovieById(imdbId, "full")
+            if (response.isSuccessful) {
+                val data = response.body()
+                emit(ApiResult.success(data ?: throw Exception("An error has occurred"))) // TODO: show better exception
+            } else {
+                Log.d("jerrydev", "getMovieDetails: $response")
+                emit(ApiResult.failure(ErrorResponse("", "")))
+            }
+        }
     }
 }

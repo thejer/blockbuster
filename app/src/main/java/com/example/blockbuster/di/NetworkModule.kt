@@ -1,9 +1,13 @@
 package com.example.blockbuster.di
 
+import com.example.blockbuster.BuildConfig
+import com.example.blockbuster.BuildConfig.API_KEY
+import com.example.blockbuster.BuildConfig.HOST_NAME
 import com.example.blockbuster.data.remote.repository.MainRemoteRepository
 import com.example.blockbuster.data.remote.repository.RemoteRepository
 import com.example.blockbuster.data.remote.service.ApiService
 import com.example.blockbuster.data.remote.utils.NetworkExceptionInterceptor
+import com.google.gson.Gson
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -15,44 +19,68 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Singleton
 
-@Module
+@Module(includes = [LocalDataModule::class])
 @InstallIn(SingletonComponent::class)
 class NetworkModule {
 
-    companion object {
-        const val BASE_URL = "http://www.omdbapi.com/"
-        const val API_KEY = ""
-    }
-
     @Provides
     @Singleton
-    fun provideHttpClient(): OkHttpClient =
+    fun provideHttpClient(
+        loggingInterceptor: HttpLoggingInterceptor,
+        paramInterceptor: Interceptor
+    ): OkHttpClient =
         OkHttpClient.Builder()
-            .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
-            .apply {
-                val paramInterceptor = Interceptor { chain ->
-                    val url = chain.request().url.newBuilder()
-                        .addQueryParameter("apikey", API_KEY)
-                        .build()
-                    val requestBuilder = chain.request()
-                        .newBuilder()
-                        .url(url)
-                    val request = requestBuilder.build()
-                    chain.proceed(request)
-                }
-                addInterceptor(paramInterceptor)
-            }
+            .addInterceptor(loggingInterceptor)
+            .addInterceptor(paramInterceptor)
             .addInterceptor(NetworkExceptionInterceptor())
             .build()
 
     @Provides
     @Singleton
-    fun provideRetrofit(httpClient: OkHttpClient): Retrofit =
+    fun provideLoggingInterceptor(): HttpLoggingInterceptor =
+        HttpLoggingInterceptor().apply {
+            HttpLoggingInterceptor.Level.BODY
+            level = if (BuildConfig.DEBUG) {
+                HttpLoggingInterceptor.Level.BODY
+            } else {
+                HttpLoggingInterceptor.Level.NONE
+            }
+        }
+
+    @Provides
+    @Singleton
+    fun provideParamInterceptor(): Interceptor =
+        Interceptor { chain ->
+            val url = chain.request().url.newBuilder()
+                .addQueryParameter("apikey", API_KEY)
+                .build()
+            val requestBuilder = chain.request()
+                .newBuilder()
+                .url(url)
+            val request = requestBuilder.build()
+            chain.proceed(request)
+        }
+
+    @Provides
+    @Singleton
+    fun provideRetrofit(
+        httpClient: OkHttpClient,
+        gsonConverterFactory: GsonConverterFactory
+    ): Retrofit =
         Retrofit.Builder()
-            .baseUrl(BASE_URL)
+            .baseUrl(HOST_NAME)
             .client(httpClient)
-            .addConverterFactory(GsonConverterFactory.create())
+            .addConverterFactory(gsonConverterFactory)
             .build()
+
+    @Provides
+    @Singleton
+    fun provideGson(): Gson = Gson()
+
+    @Provides
+    @Singleton
+    fun provideGsonConverterFactory(gson: Gson): GsonConverterFactory =
+        GsonConverterFactory.create(gson)
 
     @Provides
     @Singleton
