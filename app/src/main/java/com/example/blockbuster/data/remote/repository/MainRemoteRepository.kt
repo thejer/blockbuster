@@ -4,38 +4,41 @@ import android.util.Log
 import com.example.blockbuster.data.remote.model.ApiMovieDetails
 import com.example.blockbuster.data.remote.model.ApiMovieSearchResult
 import com.example.blockbuster.data.remote.service.ApiService
-import com.example.blockbuster.data.remote.utils.ApiResult
-import com.example.blockbuster.data.remote.utils.ErrorResponse
+import com.example.blockbuster.data.utils.DataResult
+import com.example.blockbuster.data.utils.ErrorResponse
+import com.example.blockbuster.data.utils.GENERIC_ERROR_MESSAGE
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
-import java.lang.Exception
 import javax.inject.Inject
 
-class MainRemoteRepository @Inject constructor(private val apiService: ApiService): RemoteRepository {
+class MainRemoteRepository @Inject constructor(private val apiService: ApiService) :
+    RemoteRepository {
 
-    override fun searchMovie(query: String): Flow<ApiResult<ApiMovieSearchResult, ErrorResponse>> =
+    override fun searchMovie(query: String): Flow<DataResult<ApiMovieSearchResult, ErrorResponse>> =
         flow {
             val response = apiService.searchMovies(query)
             if (response.isSuccessful) {
                 val data = response.body()
-                emit(ApiResult.success(data ?: throw Exception("An error has occurred"))) // TODO: show better exception
+                emit(DataResult.success(data ?: throw Exception(GENERIC_ERROR_MESSAGE)))
             } else {
                 Log.d("jerrydev", "searchMovie: $response")
-                emit(ApiResult.failure(ErrorResponse("", "")))
+                val errorBody = response.body()?.error ?: GENERIC_ERROR_MESSAGE
+                emit(DataResult.failure(ErrorResponse(errorBody)))
             }
         }.flowOn(Dispatchers.IO)
 
-    override fun getMovieDetails(imdbId: String): Flow<ApiResult<ApiMovieDetails, ErrorResponse>> {
+    override fun getMovieDetails(imdbId: String): Flow<DataResult<ApiMovieDetails, ErrorResponse>> {
         return flow {
             val response = apiService.getMovieById(imdbId, "full")
             if (response.isSuccessful) {
-                val data = response.body()
-                emit(ApiResult.success(data ?: throw Exception("An error has occurred"))) // TODO: show better exception
+                val data = response.body() ?: throw Exception(GENERIC_ERROR_MESSAGE)
+                emit(DataResult.success(data))
             } else {
                 Log.d("jerrydev", "getMovieDetails: $response")
-                emit(ApiResult.failure(ErrorResponse("", "")))
+                val errorBody = response.body()?.error ?: GENERIC_ERROR_MESSAGE
+                emit(DataResult.failure(ErrorResponse(errorBody)))
             }
         }
     }

@@ -18,8 +18,10 @@ data class ApiMovieItem(
 data class ApiMovieSearchResult(
     @SerializedName("Response")
     val response: String,
-    @SerializedName("ApiMovieItem")
+    @SerializedName("Search")
     val apiMovieItems: List<ApiMovieItem>,
     @SerializedName("totalResults")
-    val totalResults: String
+    val totalResults: String,
+    @SerializedName("Error")
+    val error: String
 )
