@@ -6,7 +6,7 @@ import com.example.blockbuster.BuildConfig.HOST_NAME
 import com.example.blockbuster.data.remote.repository.MainRemoteRepository
 import com.example.blockbuster.data.remote.repository.RemoteRepository
 import com.example.blockbuster.data.remote.service.ApiService
-import com.example.blockbuster.data.remote.utils.NetworkExceptionInterceptor
+import com.example.blockbuster.data.utils.NetworkExceptionInterceptor
 import com.google.gson.Gson
 import dagger.Module
 import dagger.Provides
@@ -87,6 +87,8 @@ class NetworkModule {
     fun provideApiService(retrofit: Retrofit): ApiService =
         retrofit.create(ApiService::class.java)
 
+    @Provides
+    @Singleton
     fun provideRepository(apiService: ApiService): RemoteRepository =
         MainRemoteRepository(apiService)
 }

@@ -10,7 +10,7 @@ android {
     compileSdk = 34
 
     defaultConfig {
-        val hostname = "http://www.omdbapi.com/"
+        val hostname = "https://www.omdbapi.com/"
         val apiKey = "362046fc"
         manifestPlaceholders["hostName"] = hostname
         applicationId = "com.example.blockbuster"
@@ -72,6 +72,8 @@ dependencies {
     // Room
     implementation ("androidx.room:room-runtime:2.6.1")
     implementation ("androidx.room:room-ktx:2.6.1")
+    implementation("androidx.constraintlayout:constraintlayout:2.1.4")
+    implementation("androidx.fragment:fragment-ktx:1.8.1")
     kapt ("androidx.room:room-compiler:2.6.1")
 
     //Glide

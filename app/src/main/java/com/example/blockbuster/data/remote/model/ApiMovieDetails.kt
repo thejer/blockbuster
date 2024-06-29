@@ -15,6 +15,8 @@ data class ApiMovieDetails(
     val dVD: String,
     @SerializedName("Director")
     val director: String,
+    @SerializedName("Error")
+    val error: String,
     @SerializedName("Genre")
     val genre: String,
     @SerializedName("imdbID")
