@@ -5,6 +5,7 @@ import androidx.room.Room
 import com.example.blockbuster.data.local.BlockbusterDatabase
 import com.example.blockbuster.data.local.daos.MovieDetailsDao
 import com.example.blockbuster.data.local.daos.MovieItemDao
+import com.example.blockbuster.data.local.repository.LocalRepository
 import com.example.blockbuster.data.local.repository.MainLocalRepository
 import com.example.blockbuster.data.utils.DATABASE_NAME
 import dagger.Module
@@ -33,8 +34,10 @@ object LocalDataModule {
     fun provideMovieDetailsDao(blockbusterDatabase: BlockbusterDatabase): MovieDetailsDao =
         blockbusterDatabase.movieDetailsDao
 
+    @Provides
+    @Singleton
     fun provideLocalRepository(
         movieItemDao: MovieItemDao,
         movieDetailsDao: MovieDetailsDao
-    ): MainLocalRepository = MainLocalRepository(movieItemDao, movieDetailsDao)
+    ): LocalRepository = MainLocalRepository(movieItemDao, movieDetailsDao)
 }
