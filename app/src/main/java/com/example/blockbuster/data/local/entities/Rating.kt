@@ -10,4 +10,8 @@ data class Rating(
     val imdbId: String,
     val source: String,
     val value: String
-)
+) {
+    override fun toString(): String {
+        return "$source $value"
+    }
+}
