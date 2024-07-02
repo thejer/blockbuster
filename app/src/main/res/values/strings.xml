@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">Blockbuster</string>
+    <string name="blockbuster">BLOCKBUSTER</string>
+    <string name="browse">Browse</string>
+    <string name="search">Search</string>
+    <string name="movie_poster">Movie Poster</string>
+    <string name="blockbuster_image_header">Blockbuster Image Header</string>
 </resources>

@@ -19,7 +19,8 @@ class MainRemoteRepository @Inject constructor(private val apiService: ApiServic
     override fun searchMovie(query: String): Flow<DataResult<ApiMovieSearchResult, ErrorResponse>> =
         flow {
             val response = apiService.searchMovies(query)
-            if (response.isSuccessful) {
+            Log.d("jerrydev", "searchMovie: ${response.body()}")
+            if (response.isSuccessful || response.body()?.response == "True") {
                 val data = response.body()
                 emit(DataResult.success(data ?: throw Exception(GENERIC_ERROR_MESSAGE)))
             } else {
@@ -32,7 +33,7 @@ class MainRemoteRepository @Inject constructor(private val apiService: ApiServic
     override fun getMovieDetails(imdbId: String): Flow<DataResult<ApiMovieDetails, ErrorResponse>> {
         return flow {
             val response = apiService.getMovieById(imdbId, "full")
-            if (response.isSuccessful) {
+            if (response.isSuccessful || response.body()?.response == "True") {
                 val data = response.body() ?: throw Exception(GENERIC_ERROR_MESSAGE)
                 emit(DataResult.success(data))
             } else {

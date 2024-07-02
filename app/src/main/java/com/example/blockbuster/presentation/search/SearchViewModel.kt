@@ -1,13 +1,12 @@
 package com.example.blockbuster.presentation.search
 
-import android.util.Log
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.blockbuster.data.local.repository.LocalRepository
-import com.example.blockbuster.data.network.NetworkConnectivityManager
-import com.example.blockbuster.data.remote.repository.RemoteRepository
+import com.example.blockbuster.data.AppRepository
+import com.example.blockbuster.data.local.entities.MovieItem
 import com.example.blockbuster.data.utils.getOrThrow
-import com.example.blockbuster.data.utils.toMovieItem
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -15,27 +14,30 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SearchViewModel @Inject constructor(
-    private val repository: RemoteRepository,
-    private val localRepository: LocalRepository,
-    private val networkConnectivityManager: NetworkConnectivityManager
+    private val repository: AppRepository,
 ) : ViewModel() {
 
-    init {
-        networkConnectivityManager.startListenNetworkState()
-    }
-    fun searchMovie(query: String) {
-        viewModelScope.launch {
-            networkConnectivityManager.isNetworkConnectedFlow.collectLatest {
-                Log.d("jerrydev", "searchMovie: $it")
-            }
-            repository.searchMovie("red").collectLatest {
-                localRepository.saveMovieItem(it.getOrThrow().apiMovieItems[0].toMovieItem())
-                Log.d("jerrydev", "searchMovie: ${it.getOrThrow()}")
+    private val _uiState = MutableLiveData<MovieSearchUiState>()
+    val uiState: LiveData<MovieSearchUiState>
+        get() = _uiState
 
-                localRepository.getAllMovieItems().collectLatest {
-                    Log.d("jerrydev", "searchMovie: getAllMovieItems $it")
+    init {
+        _uiState.value = MovieSearchUiState(movies = emptyList())
+    }
+
+    fun searchMovie(query: String) = viewModelScope.launch {
+            repository.searchMovies(query).collectLatest { response ->
+                if (response.isSuccess) {
+                    val movies = response.getOrThrow()
+                    _uiState.value = uiState.value?.copy(movies = movies)
+                } else {
+                    // show error
                 }
             }
         }
-    }
+
+
+    data class MovieSearchUiState(
+        val movies: List<MovieItem>,
+    )
 }

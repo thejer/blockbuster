@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    app:startDestination="@+id/search"
+    android:id="@+id/mobile_navigation">
+
+    <fragment
+        android:id="@+id/search"
+        android:name="com.example.blockbuster.presentation.search.SearchFragment"
+        android:label="Search"
+        tools:layout="@layout/fragment_search">
+
+        <action
+            android:id="@+id/action_search_to_movie_details"
+            app:destination="@id/movie_details" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/watch_list"
+        android:name="com.example.blockbuster.presentation.watchlist.WatchListFragment"
+        android:label="Watchlist"
+        tools:layout="@layout/fragment_watch_list">
+
+        <action
+            android:id="@+id/action_watch_list_to_movie_details"
+            app:destination="@id/movie_details" />
+    </fragment>
+
+
+    <fragment
+        android:id="@+id/movie_details"
+        android:name="com.example.blockbuster.presentation.details.MovieDetailsFragment"
+        android:label="Movie Details"
+        tools:layout="@layout/fragment_movie_details"/>
+
+</navigation>
