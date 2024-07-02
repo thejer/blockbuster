@@ -12,4 +12,5 @@ data class MovieItem(
     val title: String,
     val type: String,
     val poster: String,
+    val isSaved: Boolean
 )

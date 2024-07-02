@@ -32,6 +32,7 @@ class SearchFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val moviesListAdapter = MoviesListAdapter { imdbId ->
+            viewModel.saveMovie(imdbId)
             findNavController().navigate(SearchFragmentDirections.actionSearchToMovieDetails(imdbId))
         }
         binding.moviesRecyclerview.apply {
@@ -57,8 +58,11 @@ class SearchFragment : Fragment() {
         }
 
         binding.searchView.doOnTextChanged { text, _, _, _ ->
+            viewModel.updateQuery(text?.toString() ?: "")
             if ((text?.length ?: 0) >= 2) {
                 viewModel.searchMovie(text.toString())
+            } else {
+                viewModel.getAllLocalMovies()
             }
         }
     }

@@ -21,17 +21,41 @@ class SearchViewModel @Inject constructor(
     val uiState: LiveData<MovieSearchUiState>
         get() = _uiState
 
+    init {
+        getAllLocalMovies()
+    }
+
     fun searchMovie(query: String) = viewModelScope.launch {
             repository.searchMovies(query).collectLatest { response ->
                 if (response.isSuccess) {
                     val movies = response.getOrThrow()
                     _uiState.value = uiState.value?.copy(movies = movies, searchQuery = query)
                 } else {
+                    _uiState.value = uiState.value?.copy(movies = emptyList())
                     // show error
                 }
             }
         }
 
+    fun getAllLocalMovies() =  viewModelScope.launch {
+        repository.getAllLocalMovies().collectLatest { response ->
+            if (response.isSuccess) {
+                val movies = response.getOrThrow()
+                _uiState.value = uiState.value?.copy(movies = movies, searchQuery = "")
+            } else {
+                _uiState.value = uiState.value?.copy(movies = emptyList())
+                // show error
+            }
+        }
+    }
+
+    fun saveMovie(imdbId: String) = viewModelScope.launch {
+        repository.setMovieItemAsSaved(imdbId)
+    }
+
+    fun updateQuery(query: String) {
+        _uiState.value = uiState.value?.copy(searchQuery = query)
+    }
 
     data class MovieSearchUiState(
         val movies: List<MovieItem>,

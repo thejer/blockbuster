@@ -26,7 +26,7 @@ class MainActivity : AppCompatActivity() {
     private fun setUpNavigation(navigationView: BottomNavigationView) {
         val navController = findNavController(R.id.nav_host_fragment_container)
         navigationView.setupWithNavController(navController)
-        navController.addOnDestinationChangedListener { _, destination, arguments ->
+        navController.addOnDestinationChangedListener { _, destination, _ ->
             when (destination.id) {
                 R.id.search -> {
                     navigationView.visibility = VISIBLE

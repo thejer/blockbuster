@@ -12,7 +12,7 @@ import com.example.blockbuster.data.local.entities.Rating
 
 @Database(
     entities = [MovieItem::class, MovieDetails::class, Rating::class],
-    version = 1,
+    version = 2,
     exportSchema = false
 )
 @TypeConverters(RatingsConverter::class)

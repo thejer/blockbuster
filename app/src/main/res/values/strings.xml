@@ -13,4 +13,6 @@
     <string name="directed_by">Directed by</string>
     <string name="written_by">Written by</string>
     <string name="featuring">Featuring</string>
+    <string name="search_watchlist">Search Watchlist</string>
+    <string name="watchlist">Watchlist</string>
 </resources>
