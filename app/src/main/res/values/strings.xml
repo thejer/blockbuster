@@ -15,4 +15,6 @@
     <string name="featuring">Featuring</string>
     <string name="search_watchlist">Search Watchlist</string>
     <string name="watchlist">Watchlist</string>
+    <string name="you_are_offline">You are offline</string>
+    <string name="you_are_online">You\'re back online</string>
 </resources>

@@ -27,11 +27,9 @@ class WatchListViewModel@Inject constructor(
     }
 
     fun getAllSavedMovies() = viewModelScope.launch {
-        Log.d("jerrydev", "getAllSavedMovies: ")
         repository.getAllSavedMovies().collectLatest { response ->
             if (response.isSuccess) {
                 val movies = response.getOrThrow()
-                Log.d("jerrydev", "getAllSavedMovies: $movies")
                 _uiState.value = uiState.value?.copy(movies = movies, searchQuery = "")
             } else {
                 _uiState.value = uiState.value?.copy(movies = emptyList())

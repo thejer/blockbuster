@@ -25,4 +25,6 @@ interface AppRepository {
     suspend fun bulkSaveMovies(movies: List<MovieItem>)
 
     suspend fun setMovieItemAsSaved(imdbId: String)
+
+    suspend fun isOnline(): Flow<Boolean>
 }
