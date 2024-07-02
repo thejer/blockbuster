@@ -47,6 +47,7 @@ android {
 
     buildFeatures {
         buildConfig = true
+        dataBinding = true
     }
 }
 
@@ -68,12 +69,18 @@ dependencies {
     // Architectural Components
     implementation ("androidx.lifecycle:lifecycle-livedata-ktx:2.8.2")
     implementation ("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.2")
+    implementation ("androidx.recyclerview:recyclerview:1.2.1")
+    implementation("androidx.fragment:fragment-ktx:1.8.1")
+    implementation("androidx.constraintlayout:constraintlayout:2.1.4")
+
+    // Navigation
+    implementation ("androidx.navigation:navigation-fragment-ktx:2.3.5")
+    implementation ("androidx.navigation:navigation-ui-ktx:2.3.5")
 
     // Room
     implementation ("androidx.room:room-runtime:2.6.1")
     implementation ("androidx.room:room-ktx:2.6.1")
-    implementation("androidx.constraintlayout:constraintlayout:2.1.4")
-    implementation("androidx.fragment:fragment-ktx:1.8.1")
+    implementation("androidx.legacy:legacy-support-v4:1.0.0")
     kapt ("androidx.room:room-compiler:2.6.1")
 
     //Glide

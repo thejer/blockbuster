@@ -19,9 +19,9 @@ data class ApiMovieSearchResult(
     @SerializedName("Response")
     val response: String,
     @SerializedName("Search")
-    val apiMovieItems: List<ApiMovieItem>,
+    val apiMovieItems: List<ApiMovieItem>?,
     @SerializedName("totalResults")
-    val totalResults: String,
+    val totalResults: String?,
     @SerializedName("Error")
-    val error: String
+    val error: String?
 )

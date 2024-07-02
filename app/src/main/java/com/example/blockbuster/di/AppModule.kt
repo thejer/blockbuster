@@ -1,8 +1,12 @@
 package com.example.blockbuster.di
 
 import android.content.Context
+import com.example.blockbuster.data.AppRepository
+import com.example.blockbuster.data.MainAppRepository
+import com.example.blockbuster.data.local.repository.LocalRepository
 import com.example.blockbuster.data.network.MainNetworkConnectivityManager
 import com.example.blockbuster.data.network.NetworkConnectivityManager
+import com.example.blockbuster.data.remote.repository.RemoteRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -27,4 +31,9 @@ object AppModule {
         @ApplicationContext context: Context,
         coroutineScope: CoroutineScope
     ): NetworkConnectivityManager = MainNetworkConnectivityManager(context, coroutineScope)
+
+    @Provides
+    @Singleton
+    fun provideAppRepository(localRepository: LocalRepository, remoteRepository: RemoteRepository): AppRepository =
+        MainAppRepository(localRepository, remoteRepository)
 }
