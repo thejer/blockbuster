@@ -32,7 +32,8 @@ fun ApiMovieItem.toMovieItem() = MovieItem(
     year = year,
     title = title,
     type = type,
-    poster = poster
+    poster = poster,
+    isSaved = false
 )
 
 fun ApiMovieDetails.toMovieDetails() = MovieDetails(

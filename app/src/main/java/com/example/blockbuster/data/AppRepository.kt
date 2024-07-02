@@ -8,9 +8,21 @@ import kotlinx.coroutines.flow.Flow
 
 interface AppRepository {
 
-    suspend fun searchMovies(query: String): Flow<DataResult<List<MovieItem>, ErrorResponse>>
+    fun searchMovies(query: String): Flow<DataResult<List<MovieItem>, ErrorResponse>>
 
-    suspend fun getMovieDetails(imdbId: String): Flow<DataResult<MovieDetails, ErrorResponse>>
+    fun getMovieDetails(imdbId: String): Flow<DataResult<MovieDetails, ErrorResponse>>
+
+    fun getAllLocalMovies(): Flow<DataResult<List<MovieItem>, ErrorResponse>>
 
     suspend fun saveMovie(movieItem: MovieItem)
+
+    suspend fun saveMovieDetails(movieDetails: MovieDetails)
+
+    fun getAllSavedMovies(): Flow<DataResult<List<MovieItem>, ErrorResponse>>
+
+    fun searchSavedMovies(query: String): Flow<DataResult<List<MovieItem>, ErrorResponse>>
+
+    suspend fun bulkSaveMovies(movies: List<MovieItem>)
+
+    suspend fun setMovieItemAsSaved(imdbId: String)
 }

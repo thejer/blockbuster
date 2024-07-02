@@ -2,6 +2,8 @@ package com.example.blockbuster.di
 
 import android.app.Application
 import androidx.room.Room
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
 import com.example.blockbuster.data.local.BlockbusterDatabase
 import com.example.blockbuster.data.local.daos.MovieDetailsDao
 import com.example.blockbuster.data.local.daos.MovieItemDao
@@ -23,8 +25,11 @@ object LocalDataModule {
     @Singleton
     fun provideBlockbusterDatabase(app: Application): BlockbusterDatabase =
         Room.databaseBuilder(app, BlockbusterDatabase::class.java, DATABASE_NAME)
-            .fallbackToDestructiveMigration()
-            .build()
+            .addMigrations(object : Migration(1, 2) {
+                override fun migrate(db: SupportSQLiteDatabase) {
+                    db.execSQL("ALTER TABLE movieItem  ADD COLUMN isSaved INTEGER DEFAULT 0 NOT NULL")
+                }
+            }).build()
 
     @Provides
     fun provideMovieItemDao(blockbusterDatabase: BlockbusterDatabase): MovieItemDao =
