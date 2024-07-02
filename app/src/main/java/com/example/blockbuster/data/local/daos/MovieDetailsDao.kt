@@ -13,5 +13,5 @@ interface MovieDetailsDao {
     suspend fun insertMovieItem(movieDetails: MovieDetails)
 
     @Query("SELECT * FROM movieDetails WHERE imdbId = :imdbId")
-    fun getMovieDetails(imdbId: String): Flow<MovieDetails>
+    fun getMovieDetails(imdbId: String): Flow<List<MovieDetails>>
 }

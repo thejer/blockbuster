@@ -1,5 +1,6 @@
 package com.example.blockbuster.data.local.repository
 
+import com.example.blockbuster.data.local.entities.MovieDetails
 import com.example.blockbuster.data.local.entities.MovieItem
 import kotlinx.coroutines.flow.Flow
 
@@ -14,4 +15,6 @@ interface LocalRepository {
     fun searchMovieItemByTitle(title: String): Flow<List<MovieItem>>
 
     suspend fun deleteMovieItem(movieItem: MovieItem)
+
+    suspend fun getMovieDetails(imdbId: String): Flow<List<MovieDetails>>
 }

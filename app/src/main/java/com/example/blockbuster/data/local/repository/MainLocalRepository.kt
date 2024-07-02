@@ -13,6 +13,8 @@ class MainLocalRepository @Inject constructor(
     private val movieDetailsDao: MovieDetailsDao
 ) : LocalRepository {
 
+    override suspend fun getMovieDetails(imdbId: String) = movieDetailsDao.getMovieDetails(imdbId)
+
     override suspend fun saveMovieItem(movieItem: MovieItem) = movieItemDao.saveMovie(movieItem)
 
     override fun getAllMovieItems(): Flow<List<MovieItem>> =

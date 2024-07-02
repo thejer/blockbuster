@@ -13,7 +13,11 @@
 
         <action
             android:id="@+id/action_search_to_movie_details"
-            app:destination="@id/movie_details" />
+            app:destination="@id/movie_details"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
     </fragment>
 
     <fragment
@@ -32,6 +36,10 @@
         android:id="@+id/movie_details"
         android:name="com.example.blockbuster.presentation.details.MovieDetailsFragment"
         android:label="Movie Details"
-        tools:layout="@layout/fragment_movie_details"/>
+        tools:layout="@layout/fragment_movie_details">
+        <argument
+            android:name="imdbId"
+            app:argType="string" />
+    </fragment>
 
 </navigation>

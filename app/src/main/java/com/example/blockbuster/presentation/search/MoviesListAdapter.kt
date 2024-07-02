@@ -19,18 +19,17 @@ class MoviesListAdapter(
         override fun areItemsTheSame(oldItem: MovieItem, newItem: MovieItem): Boolean =
             oldItem.imdbId == newItem.imdbId
 
-
         override fun areContentsTheSame(oldItem: MovieItem, newItem: MovieItem): Boolean =
             oldItem == newItem
-
     }
 
     inner class MoviesViewHolder(private val binding: ItemMovieLayoutBinding): ViewHolder(binding.root) {
         fun bind(item: MovieItem) {
             binding.apply {
+                movieItemContainer.setOnClickListener { movieClickListener(item.imdbId) }
                 movieYear.text = item.year
                 movieTitle.text = item.title
-                Glide.with(itemView)
+                Glide.with(movieItemContainer)
                     .load(item.poster)
                     .centerCrop()
                     .transition(DrawableTransitionOptions.withCrossFade())

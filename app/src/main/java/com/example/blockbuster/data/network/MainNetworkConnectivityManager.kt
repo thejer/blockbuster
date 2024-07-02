@@ -5,7 +5,6 @@ import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkCapabilities
 import android.net.NetworkRequest
-import android.util.Log
 import com.example.blockbuster.data.utils.isConnected
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
@@ -79,14 +78,12 @@ class MainNetworkConnectivityManager(
     private inner class NetworkCallback : ConnectivityManager.NetworkCallback() {
 
         override fun onAvailable(network: Network) {
-            Log.d("jerrydem", "onAvailable: $network")
             _currentNetwork.update {
                 it.copy(isAvailable = true)
             }
         }
 
         override fun onLost(network: Network) {
-            Log.d("jerrydem", "onLost: $network")
             _currentNetwork.update {
                 it.copy(
                     isAvailable = false,
@@ -96,7 +93,6 @@ class MainNetworkConnectivityManager(
         }
 
         override fun onUnavailable() {
-            Log.d("jerrydem", "onUnavailable: ")
             _currentNetwork.update {
                 it.copy(
                     isAvailable = false,
@@ -109,7 +105,6 @@ class MainNetworkConnectivityManager(
             network: Network,
             networkCapabilities: NetworkCapabilities
         ) {
-            Log.d("jerrydem", "onCapabilitiesChanged: network $network networkCapabilities $networkCapabilities")
             _currentNetwork.update {
                 it.copy(networkCapabilities = networkCapabilities)
             }

@@ -17,19 +17,15 @@ class SearchViewModel @Inject constructor(
     private val repository: AppRepository,
 ) : ViewModel() {
 
-    private val _uiState = MutableLiveData<MovieSearchUiState>()
+    private val _uiState = MutableLiveData(MovieSearchUiState(movies = emptyList(), searchQuery = ""))
     val uiState: LiveData<MovieSearchUiState>
         get() = _uiState
-
-    init {
-        _uiState.value = MovieSearchUiState(movies = emptyList())
-    }
 
     fun searchMovie(query: String) = viewModelScope.launch {
             repository.searchMovies(query).collectLatest { response ->
                 if (response.isSuccess) {
                     val movies = response.getOrThrow()
-                    _uiState.value = uiState.value?.copy(movies = movies)
+                    _uiState.value = uiState.value?.copy(movies = movies, searchQuery = query)
                 } else {
                     // show error
                 }
@@ -39,5 +35,6 @@ class SearchViewModel @Inject constructor(
 
     data class MovieSearchUiState(
         val movies: List<MovieItem>,
+        val searchQuery: String
     )
 }
