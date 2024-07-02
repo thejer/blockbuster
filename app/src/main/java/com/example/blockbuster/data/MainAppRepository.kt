@@ -34,7 +34,9 @@ class MainAppRepository @Inject constructor(
             ) { movieItems, isOnline ->
                 Pair(movieItems, isOnline)
             }.collectLatest { pair ->
-                if (pair.first.isEmpty() && pair.second) {
+                val movieItems = pair.first
+                val isOnline = pair.second
+                if (movieItems.isEmpty() && isOnline) {
                     remoteRepository.searchMovie(query).collectLatest { remoteResult ->
                         if (remoteResult.isSuccess) {
                             val movies =
@@ -46,8 +48,8 @@ class MainAppRepository @Inject constructor(
                             send(DataResult.failure(remoteResult.failureOrThrow()))
                         }
                     }
-                } else if (pair.first.isNotEmpty()) {
-                    send(DataResult.success(pair.first))
+                } else if (movieItems.isNotEmpty()) {
+                    send(DataResult.success(movieItems))
                 }
             }
         }.flowOn(Dispatchers.IO)
@@ -60,7 +62,9 @@ class MainAppRepository @Inject constructor(
             ) { movieItems, isOnline ->
                 Pair(movieItems, isOnline)
             }.collectLatest { pair ->
-                if (pair.first.isEmpty() && pair.second) {
+                val movieDetails = pair.first
+                val isOnline = pair.second
+                if (movieDetails.isEmpty() && isOnline) {
                     remoteRepository.getMovieDetails(imdbId).collectLatest { remoteResult ->
                         if (remoteResult.isSuccess) {
                             val details = remoteResult.getOrThrow().toMovieDetails()
@@ -70,8 +74,10 @@ class MainAppRepository @Inject constructor(
                             send(DataResult.failure(remoteResult.failureOrThrow()))
                         }
                     }
+                } else if (movieDetails.isNotEmpty()){
+                    send(DataResult.success(movieDetails.first()))
                 } else {
-                    send(DataResult.success(pair.first.first()))
+                    send(DataResult.failure(ErrorResponse("You are offline. Connect to the internet to get the details.")))
                 }
             }
         }.flowOn(Dispatchers.IO)
