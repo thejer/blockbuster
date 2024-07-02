@@ -8,7 +8,9 @@ import android.view.inputmethod.EditorInfo.IME_ACTION_SEARCH
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
+import com.example.blockbuster.R
 import com.example.blockbuster.databinding.FragmentSearchBinding
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -29,9 +31,8 @@ class SearchFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val moviesListAdapter = MoviesListAdapter {
-
-            // open detail
+        val moviesListAdapter = MoviesListAdapter { imdbId ->
+            findNavController().navigate(SearchFragmentDirections.actionSearchToMovieDetails(imdbId))
         }
         binding.moviesRecyclerview.apply {
             layoutManager = GridLayoutManager(requireActivity(), 3)
@@ -39,7 +40,13 @@ class SearchFragment : Fragment() {
         }
         viewModel.uiState.observe(viewLifecycleOwner) {
             moviesListAdapter.submitList(it.movies)
+            binding.browseTitle.text = if (it.searchQuery.isNotEmpty()) {
+                 getString(R.string.showing_results_for, it.searchQuery)
+            } else {
+                getString(R.string.browse)
+            }
         }
+
         binding.searchView.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == IME_ACTION_SEARCH) {
                 val query = binding.searchView.text.toString()

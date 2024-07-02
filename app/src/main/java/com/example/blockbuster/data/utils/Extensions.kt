@@ -1,9 +1,13 @@
 package com.example.blockbuster.data.utils
 
 import android.net.NetworkCapabilities
+import com.example.blockbuster.data.local.entities.MovieDetails
 import com.example.blockbuster.data.local.entities.MovieItem
+import com.example.blockbuster.data.local.entities.Rating
 import com.example.blockbuster.data.network.CurrentNetwork
+import com.example.blockbuster.data.remote.model.ApiMovieDetails
 import com.example.blockbuster.data.remote.model.ApiMovieItem
+import com.example.blockbuster.data.remote.model.ApiRating
 
 private fun NetworkCapabilities?.isNetworkCapabilitiesValid(): Boolean = when {
     this == null -> false
@@ -29,4 +33,37 @@ fun ApiMovieItem.toMovieItem() = MovieItem(
     title = title,
     type = type,
     poster = poster
+)
+
+fun ApiMovieDetails.toMovieDetails() = MovieDetails(
+    imdbId = imdbID,
+    actors = actors,
+    awards = awards,
+    boxOffice = boxOffice,
+    country = country,
+    director = director,
+    dvd = dVD,
+    genre = genre,
+    imdbRating = imdbRating,
+    imdbVotes = imdbVotes,
+    language = language,
+    metaScore = metascore,
+    plot = plot,
+    poster = poster,
+    production = production,
+    rated = rated,
+    ratings = ratings.map { it.toRatings(imdbID) },
+    released = released,
+    runtime = runtime,
+    title = title,
+    type = type,
+    website = website,
+    writer = writer,
+    year = year
+)
+
+fun ApiRating.toRatings(imdbId: String) = Rating(
+    imdbId = imdbId,
+    source = source,
+    value = value
 )

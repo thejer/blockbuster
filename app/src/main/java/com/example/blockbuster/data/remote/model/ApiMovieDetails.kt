@@ -38,7 +38,7 @@ data class ApiMovieDetails(
     @SerializedName("Rated")
     val rated: String,
     @SerializedName("Ratings")
-    val ratings: List<Rating>,
+    val ratings: List<ApiRating>,
     @SerializedName("Released")
     val released: String,
     @SerializedName("Response")
@@ -57,7 +57,7 @@ data class ApiMovieDetails(
     val year: String
 )
 
-data class Rating(
+data class ApiRating(
     @SerializedName("Source")
     val source: String,
     @SerializedName("Value")

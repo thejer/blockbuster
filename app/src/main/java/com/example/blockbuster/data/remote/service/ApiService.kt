@@ -13,6 +13,7 @@ interface ApiService {
         @Query("s") searchQuery: String,
     ): Response<ApiMovieSearchResult>
 
+    @GET(".")
     suspend fun getMovieById(
         @Query("i") imdbIf: String,
         @Query("plot") plot: String

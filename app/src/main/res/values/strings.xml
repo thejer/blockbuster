@@ -5,4 +5,12 @@
     <string name="search">Search</string>
     <string name="movie_poster">Movie Poster</string>
     <string name="blockbuster_image_header">Blockbuster Image Header</string>
+    <string name="resizable_text_read_more">Read more</string>
+    <string name="resizable_text_read_less">Read less</string>
+    <string name="showing_results_for">Showing results for %s</string>
+    <string name="movie_poster_banner">Movie poster banner</string>
+    <string name="sample_movie_plot">Gotham City. Crime boss Carl Grissom (Jack Palance) effectively runs the town but there\'s a new crime fighter in town - Batman (Michael Keaton). Grissom\'s right-hand man is Jack Napier (Jack Nicholson), a brutal man who is not entirely sane. After falling out between the two Grissom has Napier set up with the Police and Napier falls to his apparent death in a vat of chemicals. However, he soon reappears as The Joker and starts a reign of terror in Gotham City. Meanwhile, reporter Vicki Vale (Kim Basinger) is in the city to do an article on Batman. She soon starts a relationship with Batman\'s everyday persona, billionaire Bruce Wayne. See less</string>
+    <string name="directed_by">Directed by</string>
+    <string name="written_by">Written by</string>
+    <string name="featuring">Featuring</string>
 </resources>
