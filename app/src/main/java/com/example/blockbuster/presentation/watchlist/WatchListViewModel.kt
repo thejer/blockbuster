@@ -1,12 +1,12 @@
 package com.example.blockbuster.presentation.watchlist
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.blockbuster.data.AppRepository
 import com.example.blockbuster.data.local.entities.MovieItem
+import com.example.blockbuster.data.utils.failureOrThrow
 import com.example.blockbuster.data.utils.getOrThrow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collectLatest
@@ -18,7 +18,7 @@ class WatchListViewModel@Inject constructor(
     private val repository: AppRepository,
 ) : ViewModel() {
 
-    private val _uiState = MutableLiveData(WatchListUiState(movies = emptyList(), searchQuery = ""))
+    private val _uiState = MutableLiveData(WatchListUiState())
     val uiState: LiveData<WatchListUiState>
         get() = _uiState
 
@@ -32,8 +32,10 @@ class WatchListViewModel@Inject constructor(
                 val movies = response.getOrThrow()
                 _uiState.value = uiState.value?.copy(movies = movies, searchQuery = "")
             } else {
-                _uiState.value = uiState.value?.copy(movies = emptyList())
-                // show error
+                _uiState.value = uiState.value?.copy(
+                    movies = emptyList(),
+                    errorMessage = response.failureOrThrow().error
+                )
             }
         }
     }
@@ -44,8 +46,10 @@ class WatchListViewModel@Inject constructor(
                 val movies = response.getOrThrow()
                 _uiState.value = uiState.value?.copy(movies = movies, searchQuery = query)
             } else {
-                _uiState.value = uiState.value?.copy(movies = emptyList())
-                // show error
+                _uiState.value = uiState.value?.copy(
+                    movies = emptyList(),
+                    errorMessage = response.failureOrThrow().error
+                )
             }
         }
     }
@@ -55,7 +59,8 @@ class WatchListViewModel@Inject constructor(
     }
 
     data class WatchListUiState(
-        val movies: List<MovieItem>,
-        val searchQuery: String
+        val movies: List<MovieItem> = emptyList(),
+        val searchQuery: String = "",
+        val errorMessage: String? = null
     )
 }

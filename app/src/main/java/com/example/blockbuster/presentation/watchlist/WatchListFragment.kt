@@ -13,7 +13,8 @@ import androidx.recyclerview.widget.GridLayoutManager
 import com.example.blockbuster.R
 import com.example.blockbuster.databinding.FragmentWatchListBinding
 import com.example.blockbuster.presentation.search.MoviesListAdapter
-import com.example.blockbuster.presentation.search.SearchFragmentDirections
+import com.example.blockbuster.presentation.showSnackbar
+import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -21,6 +22,8 @@ class WatchListFragment : Fragment() {
 
     private val viewModel: WatchListViewModel by viewModels()
     private lateinit var binding: FragmentWatchListBinding
+
+    private var snackbar: Snackbar? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -34,7 +37,7 @@ class WatchListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val moviesListAdapter = MoviesListAdapter { imdbId ->
-            findNavController().navigate(SearchFragmentDirections.actionSearchToMovieDetails(imdbId))
+            findNavController().navigate(WatchListFragmentDirections.actionWatchListToMovieDetails(imdbId))
         }
         binding.watchlistRecyclerview.apply {
             layoutManager = GridLayoutManager(requireActivity(), 3)
@@ -45,7 +48,15 @@ class WatchListFragment : Fragment() {
             binding.watchlistTitle.text = if (it.searchQuery.isNotEmpty()) {
                 getString(R.string.showing_results_for, it.searchQuery)
             } else {
-                getString(R.string.browse)
+                getString(R.string.watchlist)
+            }
+            it.errorMessage?.let { errorMessage ->
+                snackbar?.dismiss()
+                snackbar = binding.root.showSnackbar(
+                    snackbarText = errorMessage,
+                    timeLength = Snackbar.LENGTH_INDEFINITE,
+                    actionString = getString(R.string.dismiss)
+                ) {}
             }
         }
 

@@ -12,6 +12,8 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.blockbuster.R
 import com.example.blockbuster.databinding.FragmentSearchBinding
+import com.example.blockbuster.presentation.showSnackbar
+import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -19,6 +21,8 @@ class SearchFragment : Fragment() {
     private val viewModel: SearchViewModel by viewModels()
 
     private lateinit var binding: FragmentSearchBinding
+
+    private var snackbar: Snackbar? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -45,6 +49,14 @@ class SearchFragment : Fragment() {
                  getString(R.string.showing_results_for, it.searchQuery)
             } else {
                 getString(R.string.browse)
+            }
+            it.errorMessage?.let { errorMessage ->
+                snackbar?.dismiss()
+                snackbar = binding.root.showSnackbar(
+                    snackbarText = errorMessage,
+                    timeLength = Snackbar.LENGTH_INDEFINITE,
+                    actionString = getString(R.string.dismiss)
+                ) {}
             }
         }
 

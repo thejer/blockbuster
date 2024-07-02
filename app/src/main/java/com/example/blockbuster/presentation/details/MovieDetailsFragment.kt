@@ -6,12 +6,15 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.example.blockbuster.R
 import com.example.blockbuster.databinding.FragmentMovieDetailsBinding
 import com.example.blockbuster.presentation.setResizableText
+import com.example.blockbuster.presentation.showSnackbar
+import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -20,6 +23,8 @@ class MovieDetailsFragment : Fragment() {
     private val viewModel: MovieDetailsViewModel by viewModels()
 
     private lateinit var binding: FragmentMovieDetailsBinding
+
+    private var snackbar: Snackbar? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -65,9 +70,21 @@ class MovieDetailsFragment : Fragment() {
                     icToggleDetails.setImageResource(moreDetailsCaret)
                 }
 
+                uiState.errorMessage?.let { errorMessage ->
+                    snackbar?.dismiss()
+                    snackbar = binding.root.showSnackbar(
+                        snackbarText = errorMessage,
+                        timeLength = Snackbar.LENGTH_INDEFINITE,
+                        actionString = getString(R.string.dismiss)
+                    ) { goBack() }
+                }
             }
         }
         val args: MovieDetailsFragmentArgs by navArgs()
         viewModel.getMovieDetails(args.imdbId)
+    }
+
+    private fun goBack() {
+        findNavController().popBackStack()
     }
 }

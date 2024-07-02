@@ -17,26 +17,34 @@ class MainRemoteRepository @Inject constructor(private val apiService: ApiServic
 
     override fun searchMovie(query: String): Flow<DataResult<ApiMovieSearchResult, ErrorResponse>> =
         flow {
-            val response = apiService.searchMovies(query)
-            if (response.isSuccessful || response.body()?.response == "True") {
-                val data = response.body()
-                emit(DataResult.success(data ?: throw Exception(GENERIC_ERROR_MESSAGE)))
-            } else {
-                val errorBody = response.body()?.error ?: GENERIC_ERROR_MESSAGE
-                emit(DataResult.failure(ErrorResponse(errorBody)))
+            try {
+                val response = apiService.searchMovies(query)
+                if (response.isSuccessful && response.body()?.response == "True") {
+                    val data = response.body()
+                    emit(DataResult.success(data ?: throw Exception(GENERIC_ERROR_MESSAGE)))
+                } else {
+                    val errorBody = response.body()?.error ?: GENERIC_ERROR_MESSAGE
+                    emit(DataResult.failure(ErrorResponse(errorBody)))
+                }
+            } catch (exception: Exception) {
+                emit(DataResult.failure(ErrorResponse(exception.message ?: "An error occurred")))
             }
         }.flowOn(Dispatchers.IO)
 
     override fun getMovieDetails(imdbId: String): Flow<DataResult<ApiMovieDetails, ErrorResponse>> {
         return flow {
-            val response = apiService.getMovieById(imdbId, "full")
-            if (response.isSuccessful || response.body()?.response == "True") {
-                val data = response.body() ?: throw Exception(GENERIC_ERROR_MESSAGE)
-                emit(DataResult.success(data))
-            } else {
-                val errorBody = response.body()?.error ?: GENERIC_ERROR_MESSAGE
-                emit(DataResult.failure(ErrorResponse(errorBody)))
+            try {
+                val response = apiService.getMovieById(imdbId, "full")
+                if (response.isSuccessful && response.body()?.response == "True") {
+                    val data = response.body() ?: throw Exception(GENERIC_ERROR_MESSAGE)
+                    emit(DataResult.success(data))
+                } else {
+                    val errorBody = response.body()?.error ?: GENERIC_ERROR_MESSAGE
+                    emit(DataResult.failure(ErrorResponse(errorBody)))
+                }
+            } catch (exception: Exception) {
+                emit(DataResult.failure(ErrorResponse(exception.message ?: "An error occurred")))
             }
-        }
+        }.flowOn(Dispatchers.IO)
     }
 }

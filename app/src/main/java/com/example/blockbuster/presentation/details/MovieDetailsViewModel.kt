@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.blockbuster.data.AppRepository
 import com.example.blockbuster.data.local.entities.MovieDetails
+import com.example.blockbuster.data.utils.failureOrThrow
 import com.example.blockbuster.data.utils.getOrThrow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collectLatest
@@ -16,7 +17,7 @@ import javax.inject.Inject
 class MovieDetailsViewModel @Inject constructor(
     private val repository: AppRepository
 ) : ViewModel() {
-    private val _uiState = MutableLiveData(MovieDetailsUiState(movieDetails = null, isViewMoreDetails = false))
+    private val _uiState = MutableLiveData(MovieDetailsUiState())
     val uiState: LiveData<MovieDetailsUiState>
         get() = _uiState
 
@@ -27,7 +28,9 @@ class MovieDetailsViewModel @Inject constructor(
                 val movieDetails = response.getOrThrow()
                 _uiState.value = uiState.value?.copy(movieDetails = movieDetails)
             } else {
-                // show error
+                _uiState.value = uiState.value?.copy(
+                    errorMessage = response.failureOrThrow().error
+                )
             }
         }
     }
@@ -38,7 +41,8 @@ class MovieDetailsViewModel @Inject constructor(
     }
 
     data class MovieDetailsUiState(
-        val movieDetails: MovieDetails?,
-        val isViewMoreDetails: Boolean
+        val movieDetails: MovieDetails? = null,
+        val isViewMoreDetails: Boolean = false,
+        val errorMessage: String? = null
     )
 }
