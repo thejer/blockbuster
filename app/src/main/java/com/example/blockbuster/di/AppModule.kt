@@ -34,6 +34,10 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideAppRepository(localRepository: LocalRepository, remoteRepository: RemoteRepository): AppRepository =
-        MainAppRepository(localRepository, remoteRepository)
+    fun provideAppRepository(
+        localRepository: LocalRepository,
+        remoteRepository: RemoteRepository,
+        connectivityManager: NetworkConnectivityManager
+    ): AppRepository =
+        MainAppRepository(localRepository, remoteRepository, connectivityManager)
 }

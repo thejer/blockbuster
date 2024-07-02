@@ -1,9 +1,10 @@
 package com.example.blockbuster.data
 
-import android.util.Log
+import android.util.Pair
 import com.example.blockbuster.data.local.entities.MovieDetails
 import com.example.blockbuster.data.local.entities.MovieItem
 import com.example.blockbuster.data.local.repository.LocalRepository
+import com.example.blockbuster.data.network.NetworkConnectivityManager
 import com.example.blockbuster.data.remote.repository.RemoteRepository
 import com.example.blockbuster.data.utils.DataResult
 import com.example.blockbuster.data.utils.ErrorResponse
@@ -15,18 +16,25 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOn
 import javax.inject.Inject
 
 class MainAppRepository @Inject constructor(
     private val localRepository: LocalRepository,
-    private val remoteRepository: RemoteRepository
+    private val remoteRepository: RemoteRepository,
+    private val networkConnectivityManager: NetworkConnectivityManager
 ) : AppRepository {
 
     override fun searchMovies(query: String): Flow<DataResult<List<MovieItem>, ErrorResponse>> =
         channelFlow {
-            localRepository.searchMovieItemByTitle(query).collectLatest { movieItems ->
-                if (movieItems.isEmpty()) {
+            combine(
+                localRepository.searchMovieItemByTitle(query),
+                isOnline()
+            ) { movieItems, isOnline ->
+                Pair(movieItems, isOnline)
+            }.collectLatest { pair ->
+                if (pair.first.isEmpty() && pair.second) {
                     remoteRepository.searchMovie(query).collectLatest { remoteResult ->
                         if (remoteResult.isSuccess) {
                             val movies =
@@ -38,16 +46,21 @@ class MainAppRepository @Inject constructor(
                             send(DataResult.failure(remoteResult.failureOrThrow()))
                         }
                     }
-                } else {
-                    send(DataResult.success(movieItems))
+                } else if (pair.first.isNotEmpty()) {
+                    send(DataResult.success(pair.first))
                 }
             }
         }.flowOn(Dispatchers.IO)
 
     override fun getMovieDetails(imdbId: String): Flow<DataResult<MovieDetails, ErrorResponse>> =
         channelFlow {
-            localRepository.getMovieDetails(imdbId).collectLatest { movieDetails ->
-                if (movieDetails.isEmpty()) {
+            combine(
+                localRepository.getMovieDetails(imdbId),
+                isOnline()
+            ) { movieItems, isOnline ->
+                Pair(movieItems, isOnline)
+            }.collectLatest { pair ->
+                if (pair.first.isEmpty() && pair.second) {
                     remoteRepository.getMovieDetails(imdbId).collectLatest { remoteResult ->
                         if (remoteResult.isSuccess) {
                             val details = remoteResult.getOrThrow().toMovieDetails()
@@ -58,15 +71,16 @@ class MainAppRepository @Inject constructor(
                         }
                     }
                 } else {
-                    send(DataResult.success(movieDetails.first()))
+                    send(DataResult.success(pair.first.first()))
                 }
             }
         }.flowOn(Dispatchers.IO)
 
-    override suspend fun setMovieItemAsSaved(imdbId: String) {
-        Log.d("jerrydev", "setMovieItemAsSaved: $imdbId")
+    override suspend fun setMovieItemAsSaved(imdbId: String) =
         localRepository.setMovieItemAsSaved(imdbId)
-    }
+
+    override suspend fun isOnline(): Flow<Boolean> =
+        networkConnectivityManager.isNetworkConnectedFlow
 
     override fun getAllLocalMovies(): Flow<DataResult<List<MovieItem>, ErrorResponse>> =
         channelFlow {
@@ -76,7 +90,8 @@ class MainAppRepository @Inject constructor(
 
     override suspend fun saveMovie(movieItem: MovieItem) = localRepository.saveMovieItem(movieItem)
 
-    override suspend fun bulkSaveMovies(movies: List<MovieItem>) = localRepository.bulkSaveMovies(movies)
+    override suspend fun bulkSaveMovies(movies: List<MovieItem>) =
+        localRepository.bulkSaveMovies(movies)
 
     override suspend fun saveMovieDetails(movieDetails: MovieDetails) =
         localRepository.saveMovieDetails(movieDetails)

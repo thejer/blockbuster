@@ -14,7 +14,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SearchViewModel @Inject constructor(
-    private val repository: AppRepository,
+    private val repository: AppRepository
 ) : ViewModel() {
 
     private val _uiState = MutableLiveData(MovieSearchUiState(movies = emptyList(), searchQuery = ""))
