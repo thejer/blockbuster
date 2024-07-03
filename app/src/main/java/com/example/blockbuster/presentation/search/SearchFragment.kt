@@ -46,24 +46,26 @@ class SearchFragment : Fragment() {
         viewModel.uiState.observe(viewLifecycleOwner) {
             moviesListAdapter.submitList(it.movies)
             binding.browseTitle.text = if (it.searchQuery.isNotEmpty()) {
-                 getString(R.string.showing_results_for, it.searchQuery)
+                getString(R.string.showing_results_for, it.searchQuery)
             } else {
                 getString(R.string.browse)
             }
             it.errorMessage?.let { errorMessage ->
-                snackbar?.dismiss()
-                snackbar = binding.root.showSnackbar(
-                    snackbarText = errorMessage,
-                    timeLength = Snackbar.LENGTH_INDEFINITE,
-                    actionString = getString(R.string.dismiss)
-                ) {}
+                if (errorMessage.lowercase() != "too many results.") {
+                    snackbar?.dismiss()
+                    snackbar = binding.root.showSnackbar(
+                        snackbarText = errorMessage,
+                        timeLength = Snackbar.LENGTH_SHORT,
+                        actionString = getString(R.string.dismiss)
+                    ) {}
+                }
             }
         }
 
         binding.searchView.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == IME_ACTION_SEARCH) {
                 val query = binding.searchView.text.toString()
-                viewModel.searchMovie(query)
+                viewModel.updateQuery(query)
                 return@setOnEditorActionListener true
             }
             return@setOnEditorActionListener false
@@ -71,11 +73,6 @@ class SearchFragment : Fragment() {
 
         binding.searchView.doOnTextChanged { text, _, _, _ ->
             viewModel.updateQuery(text?.toString() ?: "")
-            if ((text?.length ?: 0) >= 2) {
-                viewModel.searchMovie(text.toString())
-            } else {
-                viewModel.getAllLocalMovies()
-            }
         }
     }
 }

@@ -45,11 +45,14 @@ class MainAppRepository @Inject constructor(
                             bulkSaveMovies(movies)
                             send(DataResult.success(movies))
                         } else {
-                            send(DataResult.failure(remoteResult.failureOrThrow()))
+                            val errorResponse = remoteResult.failureOrThrow()
+                            send(DataResult.failure(errorResponse))
                         }
                     }
                 } else if (movieItems.isNotEmpty()) {
                     send(DataResult.success(movieItems))
+                } else {
+                    send(DataResult.failure(ErrorResponse("You are offline. Connect to the internet")))
                 }
             }
         }.flowOn(Dispatchers.IO)

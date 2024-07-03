@@ -9,7 +9,11 @@ import com.example.blockbuster.data.local.entities.MovieItem
 import com.example.blockbuster.data.utils.failureOrThrow
 import com.example.blockbuster.data.utils.getOrThrow
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -22,25 +26,37 @@ class SearchViewModel @Inject constructor(
     val uiState: LiveData<MovieSearchUiState>
         get() = _uiState
 
+    private val queryStateFlow = MutableStateFlow("")
+
     init {
-        getAllLocalMovies()
+        viewModelScope.launch {
+            queryStateFlow
+                .debounce(500)
+                .mapLatest { query ->
+                    if (query.length >= 2) {
+                        searchMovie(query)
+                    } else {
+                        getAllLocalMovies()
+                    }
+                }.collect()
+        }
     }
 
-    fun searchMovie(query: String) = viewModelScope.launch {
-            repository.searchMovies(query).collectLatest { response ->
-                if (response.isSuccess) {
-                    val movies = response.getOrThrow()
-                    _uiState.value = uiState.value?.copy(movies = movies, searchQuery = query)
-                } else {
-                    _uiState.value = uiState.value?.copy(
-                        movies = emptyList(),
-                        errorMessage = response.failureOrThrow().error
-                    )
-                }
+    private fun searchMovie(query: String) = viewModelScope.launch {
+        repository.searchMovies(query).collectLatest { response ->
+            if (response.isSuccess) {
+                val movies = response.getOrThrow()
+                _uiState.value = uiState.value?.copy(movies = movies, searchQuery = query)
+            } else {
+                _uiState.value = uiState.value?.copy(
+                    movies = emptyList(),
+                    errorMessage = response.failureOrThrow().error
+                )
             }
         }
+    }
 
-    fun getAllLocalMovies() =  viewModelScope.launch {
+    private fun getAllLocalMovies() = viewModelScope.launch {
         repository.getAllLocalMovies().collectLatest { response ->
             if (response.isSuccess) {
                 val movies = response.getOrThrow()
@@ -60,6 +76,7 @@ class SearchViewModel @Inject constructor(
 
     fun updateQuery(query: String) {
         _uiState.value = uiState.value?.copy(searchQuery = query)
+        queryStateFlow.value = query
     }
 
     data class MovieSearchUiState(
